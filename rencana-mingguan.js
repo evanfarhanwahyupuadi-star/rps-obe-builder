@@ -64,13 +64,6 @@ function renderWeeks(){
     const jenisCell = ev ? escapeHtml(ev.jenisEvaluasi) : '—';
     const meetingPos = w.subCpmkId ? meetingPositionForSub(w.subCpmkId, idx) : null;
     const bobotCell = ev ? (isLastMeeting ? (Math.round((parseFloat(ev.bobot)||0)*10)/10+'%') : `<span class="hint" title="Pertemuan ke-${meetingPos.pos} dari ${meetingPos.total} untuk Sub-CPMK ini — bobot ditotal di pertemuan terakhir">${meetingPos.pos}/${meetingPos.total}</span>`) : '—';
-    const totalBobot = ev ? Math.round((parseFloat(ev.bobot)||0)*10)/10 : null;
-    const bobotShare = ev ? Math.round((totalBobot/meetingPos.total)*10)/10 : null;
-    const bobotCell = ev
-      ? (meetingPos.total > 1
-          ? `<span title="Dibagi rata: ${totalBobot}% ÷ ${meetingPos.total} pertemuan">${bobotShare}%</span>`
-          : bobotShare+'%')
-      : '—';
 
     // Bentuk pembelajaran: dropdown rekomendasi (mengikuti level Bloom Sub-CPMK) + opsi isi manual
     const bentukOpts = bentukOptionsFor(sub);

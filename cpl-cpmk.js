@@ -55,6 +55,30 @@ idFields.forEach(f=>{
   if(el) el.addEventListener('input',e=>{state.identitas[f]=e.target.value;});
 });
 
+// ============ LOGO (untuk kop export) ============
+function renderLogoPreview(){
+  const img = document.getElementById('logo-preview');
+  if(!img) return;
+  img.src = state.identitas.logoDataUrl || '';
+  img.style.visibility = state.identitas.logoDataUrl ? 'visible' : 'hidden';
+}
+document.getElementById('f-logoUpload').addEventListener('change',e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 2*1024*1024){ alert('Ukuran logo maksimal 2MB.'); e.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = evt=>{
+    state.identitas.logoDataUrl = evt.target.result;
+    renderLogoPreview();
+  };
+  reader.readAsDataURL(file);
+});
+document.getElementById('btn-logo-remove').addEventListener('click',()=>{
+  state.identitas.logoDataUrl = '';
+  document.getElementById('f-logoUpload').value = '';
+  renderLogoPreview();
+});
+
 // ============ CPL (read-only, otomatis dari MK) ============
 function renderCplDisplay(){
   const wrap = document.getElementById('cpl-display-wrap');
