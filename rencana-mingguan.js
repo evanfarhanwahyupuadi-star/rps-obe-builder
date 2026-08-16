@@ -60,8 +60,10 @@ function renderWeeks(){
     const subOptions = state.subCpmk.map((s,si)=>`<option value="${s.id}" ${w.subCpmkId===s.id?'selected':''}>Sub${si+1}</option>`).join('');
     const sub = w.subCpmkId ? state.subCpmk.find(s=>s.id===w.subCpmkId) : null;
     const ev = w.subCpmkId ? state.evaluasi.find(e=>e.subCpmkId===w.subCpmkId) : null;
+    const isLastMeeting = w.subCpmkId ? (lastWeekIdxForSub(w.subCpmkId)===idx) : false;
     const jenisCell = ev ? escapeHtml(ev.jenisEvaluasi) : '—';
     const meetingPos = w.subCpmkId ? meetingPositionForSub(w.subCpmkId, idx) : null;
+    const bobotCell = ev ? (isLastMeeting ? (Math.round((parseFloat(ev.bobot)||0)*10)/10+'%') : `<span class="hint" title="Pertemuan ke-${meetingPos.pos} dari ${meetingPos.total} untuk Sub-CPMK ini — bobot ditotal di pertemuan terakhir">${meetingPos.pos}/${meetingPos.total}</span>`) : '—';
     const totalBobot = ev ? Math.round((parseFloat(ev.bobot)||0)*10)/10 : null;
     const bobotShare = ev ? Math.round((totalBobot/meetingPos.total)*10)/10 : null;
     const bobotCell = ev
