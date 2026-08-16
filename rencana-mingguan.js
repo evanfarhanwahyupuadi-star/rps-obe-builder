@@ -10,6 +10,12 @@ function lastWeekIdxForSub(subCpmkId){
   state.weeks.forEach((w,i)=>{ if(w.subCpmkId===subCpmkId) last=i; });
   return last;
 }
+// posisi pertemuan (mis. 2/3) untuk minggu ke-idx yang berbagi Sub-CPMK yang sama
+function meetingPositionForSub(subCpmkId, idx){
+  const idxs = [];
+  state.weeks.forEach((w,i)=>{ if(w.subCpmkId===subCpmkId) idxs.push(i); });
+  return { pos: idxs.indexOf(idx)+1, total: idxs.length };
+}
 function renderWeeks(){
   ensureExamEvaluasi();
   const tbody = document.getElementById('week-tbody');
@@ -54,9 +60,15 @@ function renderWeeks(){
     const subOptions = state.subCpmk.map((s,si)=>`<option value="${s.id}" ${w.subCpmkId===s.id?'selected':''}>Sub${si+1}</option>`).join('');
     const sub = w.subCpmkId ? state.subCpmk.find(s=>s.id===w.subCpmkId) : null;
     const ev = w.subCpmkId ? state.evaluasi.find(e=>e.subCpmkId===w.subCpmkId) : null;
-    const isLastMeeting = w.subCpmkId ? (lastWeekIdxForSub(w.subCpmkId)===idx) : false;
     const jenisCell = ev ? escapeHtml(ev.jenisEvaluasi) : '—';
-    const bobotCell = ev ? (isLastMeeting ? (Math.round((parseFloat(ev.bobot)||0)*10)/10+'%') : '<span class="hint">lanjutan</span>') : '—';
+    const meetingPos = w.subCpmkId ? meetingPositionForSub(w.subCpmkId, idx) : null;
+    const totalBobot = ev ? Math.round((parseFloat(ev.bobot)||0)*10)/10 : null;
+    const bobotShare = ev ? Math.round((totalBobot/meetingPos.total)*10)/10 : null;
+    const bobotCell = ev
+      ? (meetingPos.total > 1
+          ? `<span title="Dibagi rata: ${totalBobot}% ÷ ${meetingPos.total} pertemuan">${bobotShare}%</span>`
+          : bobotShare+'%')
+      : '—';
 
     // Bentuk pembelajaran: dropdown rekomendasi (mengikuti level Bloom Sub-CPMK) + opsi isi manual
     const bentukOpts = bentukOptionsFor(sub);
@@ -357,4 +369,3 @@ function updateEvaluasiTotalBar(){
   if(Math.abs(total-100)<0.01){ bar.className='totals-bar ok'; bar.textContent='Total bobot: '+rounded+'% — sudah pas 100%'; }
   else { bar.className='totals-bar warn'; bar.textContent='Total bobot: '+rounded+'% — seharusnya berjumlah 100%'; }
 }
-
